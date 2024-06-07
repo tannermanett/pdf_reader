@@ -36,8 +36,8 @@ data_query_engine = PandasQueryEngine(df=data_df, verbose=True, instruction_str=
 data_query_engine.update_prompts({"pandas_prompt": new_prompt})
 
 # Load the PDF document and create the query engine
-pdf_file_path = os.path.join(base_dir, "data", "PepperDEX_Documentation.pdf")
-index_name = "PepperDEX_Index"
+pdf_file_path = os.path.join(base_dir, "data", "power-bi-fundamentals-compressed.pdf")
+index_name = "PowerBI_Fundamentals_Index"
 rebuild = False
 
 try:
