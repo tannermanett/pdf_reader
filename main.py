@@ -9,11 +9,10 @@ from llama_index.core.agent import ReActAgent
 from llama_index.llms.openai import OpenAI
 from pdf import load_documents_and_build_index
 
-# Load environment variables from Streamlit secrets
-try:
-    api_key = st.secrets["OPENAI_API_KEY"]
-except KeyError:
-    st.error("API key not found. Please check your Streamlit secrets configuration.")
+# Load environment variables from os.environ
+api_key = os.getenv('OPENAI_API_KEY')
+if not api_key:
+    st.error("API key not found. Please check your environment variable configuration.")
     st.stop()
 
 # Streamlit page setup
@@ -36,8 +35,8 @@ data_query_engine = PandasQueryEngine(df=data_df, verbose=True, instruction_str=
 data_query_engine.update_prompts({"pandas_prompt": new_prompt})
 
 # Load the PDF document and create the query engine
-pdf_file_path = os.path.join(base_dir, "data", "PepperDEX_Documentation.pdf")
-index_name = "PepperDEX_Index"
+pdf_file_path = os.path.join(base_dir, "data", "power-bi-fundamentals-compressed.pdf")
+index_name = "PowerBI_Fundamentals_Index"
 rebuild = False
 
 try:
@@ -60,7 +59,7 @@ tools = [
         query_engine=pdf_query_engine,
         metadata=ToolMetadata(
             name="doc_data",
-            description="This gives information about PepperDex Documentation",
+            description="This gives information about Power BI Fundamentals Documentation",
         ),
     ),
 ]
