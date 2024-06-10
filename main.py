@@ -18,19 +18,17 @@ api_key = os.getenv('OPENAI_API_KEY')
 if not api_key:
     st.error("API key not found. Please check your environment variable configuration.")
     st.stop()
-else:
-    st.write(f"API Key: {api_key}")
 
 # Define the base directory
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Prepare data path and load data
 data_path = os.path.join(base_dir, "data", "test_data.csv")
-if os.path.exists(data_path):
-    data_df = pd.read_csv(data_path)
-else:
+if not os.path.exists(data_path):
     st.error(f"Data file not found at {data_path}")
     st.stop()
+
+data_df = pd.read_csv(data_path)
 
 # Set up the data query engine
 data_query_engine = PandasQueryEngine(df=data_df, verbose=True, instruction_str=instruction_str)
