@@ -17,9 +17,9 @@ st.title('Query Interface for Document and Data Analysis')
 api_key = os.getenv('OPENAI_API_KEY')
 if not api_key:
     st.error("API key not found. Please check your environment variable configuration.")
+    st.stop()
 else:
     st.write(f"API Key: {api_key}")
-    
 
 # Define the base directory
 base_dir = os.path.dirname(os.path.abspath(__file__))
