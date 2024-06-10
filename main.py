@@ -64,8 +64,8 @@ tools = [
     ),
 ]
 
-# Initialize the AI model and agent
-llm = OpenAI(api_key=api_key, model="gpt-3.5-turbo-0613")
+# Initialize the AI model and agent with GPT-4 and longer responses
+llm = OpenAI(api_key=api_key, model="gpt-4-turbo", max_tokens=4096)
 agent = ReActAgent.from_tools(tools, llm=llm, verbose=True, context=context)
 
 # User input for querying
@@ -78,6 +78,6 @@ if user_query:
             try:
                 result = agent.query(user_query)
                 # Use a text area to display long responses
-                st.text_area("Result:", value=result.response, height=300)
+                st.text_area("Result:", value=result.response, height=500)
             except Exception as e:
                 st.error(f"An error occurred while processing your query: {e}")
