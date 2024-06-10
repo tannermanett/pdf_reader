@@ -9,6 +9,10 @@ from llama_index.core.agent import ReActAgent
 from llama_index.llms.openai import OpenAI
 from pdf import load_documents_and_build_index
 
+# Streamlit page setup
+st.set_page_config(page_title="Query Interface", layout="wide")
+st.title('Query Interface for Document and Data Analysis')
+
 # Verify API key
 api_key = os.getenv('OPENAI_API_KEY')
 if not api_key:
@@ -16,9 +20,6 @@ if not api_key:
 else:
     st.write(f"API Key: {api_key}")
     
-# Streamlit page setup
-st.set_page_config(page_title="Query Interface", layout="wide")
-st.title('Query Interface for Document and Data Analysis')
 
 # Define the base directory
 base_dir = os.path.dirname(os.path.abspath(__file__))
