@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
-import subprocess
 from pdf import parse_pdf, load_documents_and_build_index
 
 app = Flask(__name__)
@@ -39,14 +38,6 @@ def ask_question():
     }
 
     return jsonify(serialized_response)
-
-@app.before_first_request
-def start_streamlit():
-    # Define the path to your Streamlit script
-    streamlit_script = '/home/mannertanett/pdf_reader/main.py'
-    
-    # Start Streamlit as a subprocess
-    subprocess.Popen(['streamlit', 'run', streamlit_script])
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
