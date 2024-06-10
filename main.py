@@ -9,12 +9,13 @@ from llama_index.core.agent import ReActAgent
 from llama_index.llms.openai import OpenAI
 from pdf import load_documents_and_build_index
 
-# Load environment variables from os.environ
+# Verify API key
 api_key = os.getenv('OPENAI_API_KEY')
 if not api_key:
     st.error("API key not found. Please check your environment variable configuration.")
-    st.stop()
-
+else:
+    st.write(f"API Key: {api_key}")
+    
 # Streamlit page setup
 st.set_page_config(page_title="Query Interface", layout="wide")
 st.title('Query Interface for Document and Data Analysis')
