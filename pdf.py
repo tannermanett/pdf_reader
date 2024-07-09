@@ -1,63 +1,62 @@
 import os
-from llama_index.core import StorageContext, VectorStoreIndex, load_index_from_storage, SimpleDirectoryReader
-from dotenv import load_dotenv
+import logging
 import PyPDF2
+from llama_index.core import StorageContext, VectorStoreIndex, load_index_from_storage, SimpleDirectoryReader
 
-# Load environment settings
-load_dotenv()
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
 
 def get_index(data, index_name, rebuild=False):
-    """
-    Build or load an index based on the provided data and index name.
-    Adds support for forced rebuild.
-    """
-    index_path = os.path.join("indices", index_name)  # Storing index in a subdirectory for organization
+    index_path = os.path.join("indices", index_name)
     if not os.path.exists(index_path) or rebuild:
         if rebuild:
-            print("Rebuilding index:", index_name)
-            # Remove existing index files if rebuilding
+            logging.debug(f"Rebuilding index: {index_name}")
             if os.path.exists(index_path):
                 for root, dirs, files in os.walk(index_path, topdown=False):
                     for name in files:
                         os.remove(os.path.join(root, name))
                     for name in dirs:
                         os.rmdir(os.path.join(root, name))
-                print("Existing index removed.")
+                logging.debug("Existing index removed.")
         else:
-            print("Building new index:", index_name)
+            logging.debug(f"Building new index: {index_name}")
 
         os.makedirs(index_path, exist_ok=True)
         index = VectorStoreIndex.from_documents(data, show_progress=True)
         index.storage_context.persist(persist_dir=index_path)
     else:
-        print("Loading index from storage:", index_name)
-        index = load_index_from_storage(
-            StorageContext.from_defaults(persist_dir=index_path)
-        )
+        logging.debug(f"Loading index from storage: {index_name}")
+        index = load_index_from_storage(StorageContext.from_defaults(persist_dir=index_path))
     return index
 
-def parse_pdf(file):
-    pdf_reader = PyPDF2.PdfReader(file)
-    text = ""
-    for page_num in range(len(pdf_reader.pages)):
-        page = pdf_reader.pages[page_num]
-        text += page.extract_text()
+def parse_pdf(file_path):
+    logging.debug(f"Parsing PDF file: {file_path}")
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"PDF file not found at {file_path}")
+    
+    with open(file_path, 'rb') as file:
+        pdf_reader = PyPDF2.PdfReader(file)
+        text = ""
+        for page_num in range(len(pdf_reader.pages)):
+            page = pdf_reader.pages[page_num]
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text
+            logging.debug(f"Extracted text from page {page_num}: {page_text}")
+    
+    logging.debug(f"Total extracted text length: {len(text)}")
     return text
 
-def load_documents_and_build_index(pdf_file, index_name, rebuild=False):
-    """
-    Load a PDF document from a file, build or reload an index, and return a query engine.
-    """
-    text = parse_pdf(pdf_file)
-    
+def load_documents_and_build_index(pdf_file_path, index_name, rebuild=False):
+    text = parse_pdf(pdf_file_path)
     if not text:
         raise ValueError("No text found in the PDF file.")
     
-    print("Loading document...")
-    reader = SimpleDirectoryReader(input_files=[pdf_file])
+    logging.debug("Loading document...")
+    reader = SimpleDirectoryReader(input_files=[pdf_file_path])
     data = reader.load_data()
-    print("Document loaded.")
+    logging.debug("Document loaded.")
 
-    # Build or load the index, with optional rebuild
     index = get_index(data, index_name, rebuild=rebuild)
     return index.as_query_engine()
+
