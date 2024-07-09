@@ -37,7 +37,7 @@ data_query_engine.update_prompts({"pandas_prompt": new_prompt})
 # Load the PDF document and create the query engine
 pdf_file_path = os.path.join(base_dir, "data", "power-bi-fundamentals-compressed.pdf")
 index_name = "PowerBI_Fundamentals_Index"
-rebuild = True
+rebuild = False
 
 try:
     pdf_query_engine = load_documents_and_build_index(pdf_file_path, index_name, rebuild)
