@@ -30,17 +30,25 @@ if not os.path.exists(data_path):
 
 data_df = pd.read_csv(data_path)
 
+# Updated prompts with Wajax-specific context
+instruction_str = "You are an AI assistant specializing in data analysis and documentation for Wajax Corp. Provide detailed and contextually rich responses."
+
+new_prompt = """
+You are an AI assistant specializing in providing data analysis and insights for Wajax Corp. 
+When you respond, ensure your answers are thorough, detailed, and include relevant information specific to Wajax Corp's operations, such as inventory management, part sales, distribution, and purchase orders.
+"""
+
 # Set up the data query engine
 data_query_engine = PandasQueryEngine(df=data_df, verbose=True, instruction_str=instruction_str)
 data_query_engine.update_prompts({"pandas_prompt": new_prompt})
 
 # Load the PDF document and create the query engine
-pdf_file_path = os.path.join(base_dir, "data", "power-bi-fundamentals-compressed.pdf")
-index_name = "PowerBI_Fundamentals_Index"
-rebuild = False
+pdf_file_path = os.path.join(base_dir, "data", "PBI_Intro.pdf")
+index_name = "PBI_Intro_Index"
+rebuild = True  # Set this to True if you want to force rebuilding the index
 
 try:
-    pdf_query_engine = load_documents_and_build_index(pdf_file_path, index_name, rebuild)
+    pdf_query_engine = load_documents_and_build_index(pdf_file_path, index_name, rebuild, instruction_str, new_prompt)
 except Exception as e:
     st.error(f"An error occurred while loading the PDF document: {e}")
     st.stop()
@@ -59,7 +67,7 @@ tools = [
         query_engine=pdf_query_engine,
         metadata=ToolMetadata(
             name="doc_data",
-            description="This gives information about Power BI Fundamentals Documentation",
+            description="This gives information about PBI Intro Documentation",
         ),
     ),
 ]
